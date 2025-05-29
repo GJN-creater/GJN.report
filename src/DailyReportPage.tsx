@@ -237,9 +237,10 @@ export default function DailyReportPage() {
                       <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">📌첨부파일:</p>
                       <ul className="list-disc list-inside text-sm text-blue-600">
                         {report.files.map((fileUrl, idx) => {
-                          const fullPath = fileUrl.split("?")[0];
-                          const fullName = decodeURIComponent(fullPath.substring(fullPath.lastIndexOf("/") + 1));
-                          const cleanName = fullName.split("-").slice(1).join("-");
+                          const urlWithoutQuery = fileUrl.split("?")[0];
+                          const fileNameEncoded = urlWithoutQuery.substring(urlWithoutQuery.lastIndexOf("/") + 1);
+                          const decodedFullName = decodeURIComponent(fileNameEncoded);
+                          const cleanName = decodedFullName.split("-").slice(1).join("-");
                           return (
                             <li key={idx}>
                               <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-800">
