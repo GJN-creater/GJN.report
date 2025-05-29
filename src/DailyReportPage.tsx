@@ -238,8 +238,8 @@ export default function DailyReportPage() {
                       <ul className="list-disc list-inside text-sm text-blue-600">
                         {report.files.map((fileUrl, idx) => {
                           const fullPath = fileUrl.split("?")[0];
-                          const encodedName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
-                          const cleanName = decodeURIComponent(encodedName).split("-").slice(1).join("-");
+                          const fullName = decodeURIComponent(fullPath.substring(fullPath.lastIndexOf("/") + 1));
+                          const cleanName = fullName.split("-").slice(1).join("-");
                           return (
                             <li key={idx}>
                               <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-800">

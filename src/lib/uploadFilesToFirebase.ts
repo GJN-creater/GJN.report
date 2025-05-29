@@ -12,7 +12,7 @@ export const uploadFilesToFirebase = async (files: File[]): Promise<string[]> =>
 
   for (const file of files) {
     // 고유한 파일 이름 생성 (타임스탬프 + 원래 파일명)
-    const fileName = `${Date.now()}-${encodeURIComponent(file.name)}`;
+    const fileName = `${Date.now()}-${file.name}`;
     const storageRef = ref(storage, `uploads/${fileName}`);
 
     // 업로드 실행
