@@ -1,4 +1,5 @@
 import { uploadFilesToFirebase } from "@/lib/uploadFilesToFirebase";
+import { saveReport, fetchReports, updateReportReaders } from "@/lib/utils"; // 🔹 updateReportReaders 추가
 import { useEffect, useState } from "react";
 import { format, isWithinInterval, parse } from "date-fns";
 import { Card } from "@/components/ui/card";
@@ -16,7 +17,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Check } from "lucide-react";
 
 interface Report {
-  id: number;
+  id: number | string;
   dept: string;
   content: string;
   note: string;
@@ -44,13 +45,12 @@ export default function DailyReportPage() {
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("daily-reports");
-    if (stored) setReports(JSON.parse(stored));
+    const fetchData = async () => {
+      const data = await fetchReports();
+      setReports(data);
+    };
+    fetchData();
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("daily-reports", JSON.stringify(reports));
-  }, [reports]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) setAttachedFiles(Array.from(e.target.files));
@@ -59,8 +59,10 @@ export default function DailyReportPage() {
   const handleSubmit = async () => {
     if (!content.trim()) return;
     const now = format(new Date(), "yyyy-MM-dd");
+
     let uploadedUrls: string[] = [];
     if (attachedFiles.length > 0) uploadedUrls = await uploadFilesToFirebase(attachedFiles);
+
     if (editId !== null) {
       setReports(prev => prev.map(r => r.id === editId
         ? { ...r, dept: selectedDept, content, note, files: uploadedUrls }
@@ -77,31 +79,51 @@ export default function DailyReportPage() {
         files: uploadedUrls,
       };
       setReports([newReport, ...reports]);
+
+      await saveReport({
+        writer: "관리자",
+        department: selectedDept,
+        content,
+        note,
+        createdAt: now,
+        files: uploadedUrls,
+        readers: [],
+      });
     }
+
     setContent("");
     setNote("");
     setAttachedFiles([]);
   };
 
-  const handleReadToggle = (id: number, name: string) => {
-    setReports(prev => prev.map(r => r.id === id
-      ? {
-          ...r,
-          readers: r.readers.includes(name)
+  // 🔹 열람자 토글 시 Firestore에도 업데이트
+  const handleReadToggle = (id: number | string, name: string) => {
+    setReports(prev =>
+      prev.map(r => {
+        if (r.id === id) {
+          const updatedReaders = r.readers.includes(name)
             ? r.readers.filter(n => n !== name)
-            : [...r.readers, name]
+            : [...r.readers, name];
+
+          if (typeof r.id === "string") {
+            updateReportReaders(r.id, updatedReaders); // Firestore 업데이트
+          }
+
+          return { ...r, readers: updatedReaders };
         }
-      : r));
+        return r;
+      })
+    );
   };
 
   const handleEdit = (report: Report) => {
     setSelectedDept(report.dept);
     setContent(report.content);
     setNote(report.note);
-    setEditId(report.id);
+    setEditId(typeof report.id === "number" ? report.id : null);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: number | string) => {
     if (confirm("정말 삭제하시겠습니까?")) {
       setReports(prev => prev.filter(r => r.id !== id));
     }
@@ -254,7 +276,7 @@ export default function DailyReportPage() {
                   )}
 
                   <div className="mt-3 relative z-0 overflow-visible">
-                    <Popover open={openPopoverId === report.id} onOpenChange={(open) => setOpenPopoverId(open ? report.id : null)}>
+                    <Popover open={openPopoverId === report.id} onOpenChange={(open) => setOpenPopoverId(open ? Number(report.id) : null)}>
                       <PopoverTrigger asChild>
                         <Button variant="outline" size="sm">열람자 체크</Button>
                       </PopoverTrigger>

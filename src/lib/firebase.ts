@@ -1,11 +1,9 @@
-// Import the functions you need from the SDKs you need
-import { getStorage } from "firebase/storage";
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// src/lib/firebase.ts
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+import { initializeApp } from "firebase/app";
+import { getStorage } from "firebase/storage";
+import { getFirestore } from "firebase/firestore"; // 🔹 Firestore 추가
+
 const firebaseConfig = {
   apiKey: "AIzaSyAoojohNyinBZKHC1xeplS-i1tbTpzxuPY",
   authDomain: "my-report-f4176.firebaseapp.com",
@@ -16,6 +14,9 @@ const firebaseConfig = {
   measurementId: "G-2Z29LTD4N7"
 };
 
-// Initialize Firebase
+// 🔹 Firebase 앱 초기화
 const app = initializeApp(firebaseConfig);
+
+// 🔹 Firestore 및 Storage 인스턴스 export
+export const db = getFirestore(app);       // ✅ 이제 db 사용 가능!
 export const storage = getStorage(app);
