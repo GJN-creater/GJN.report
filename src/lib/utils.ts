@@ -31,6 +31,7 @@ import {
   addDoc,
   getDocs,
   updateDoc,
+  deleteDoc,     // ✅ 삭제 기능 추가
   orderBy,
   query,
   doc,
@@ -86,4 +87,12 @@ export const fetchReports = async () => {
 export const updateReportReaders = async (id: string, readers: string[]) => {
   const ref = doc(db, "reports", id);
   await updateDoc(ref, { readers });
+};
+
+/**
+ * Firestore에서 특정 문서 삭제
+ */
+export const deleteReport = async (id: string) => {
+  const ref = doc(db, "reports", id);
+  await deleteDoc(ref);
 };

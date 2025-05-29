@@ -1,7 +1,7 @@
 {
   "name": "my-report-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -48,15 +48,14 @@
     "tailwindcss": "^4.1.7",
     "vite": "^6.3.5"
   },
-  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
   "main": "eslint.config.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GJN-creater/GJN.report.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "GJN-creater",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/GJN-creater/GJN.report/issues"
   },
