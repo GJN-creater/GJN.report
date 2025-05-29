@@ -5,11 +5,11 @@ import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "너의 키",
-  authDomain: "xxx.firebaseapp.com",
-  projectId: "xxx",
-  storageBucket: "xxx.appspot.com",
-  messagingSenderId: "xxx",
-  appId: "xxx"
+  authDomain: "my-report-f4176.firebaseapp.com",
+  projectId: "my-report-f4176",
+  storageBucket: "my-report-f4176.appspot.com",
+  messagingSenderId: "너의 값",
+  appId: "너의 값"
 };
 
 const app = initializeApp(firebaseConfig);
