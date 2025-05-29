@@ -16,10 +16,15 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
         ref={ref}
         type="checkbox"
         onChange={handleChange}
-        className={`w-4 h-4 shrink-0 rounded border border-gray-300 dark:border-neutral-600
-          text-blue-600 dark:checked:bg-blue-500 dark:checked:border-blue-500
-          focus:ring-2 focus:ring-blue-500 focus:outline-none transition
-          ${className}`}
+        className={`
+          w-4 h-4 shrink-0 rounded-md border border-gray-300 dark:border-neutral-600
+          checked:bg-indigo-600 checked:border-indigo-600
+          dark:checked:bg-indigo-500 dark:checked:border-indigo-500
+          focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2
+          transition-all duration-200 ease-in-out
+          shadow-sm appearance-none cursor-pointer
+          ${className}
+        `}
         {...props}
       />
     );

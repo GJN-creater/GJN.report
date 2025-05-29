@@ -14,29 +14,41 @@
     color-scheme: light dark;
   }
 
-  html, body {
+  html, body, #root {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    scroll-behavior: smooth;
-    background-color: #ffffff;
-    color: #1f2937; /* gray-900 */
     font-size: 16px;
+    background-color: #ffffff;
+    color: #1f2937;
+    font-family: 'Inter', system-ui, sans-serif;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
   }
 
-  body {
-    font-family: 'Inter', system-ui, sans-serif;
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .container {
+    max-width: 1024px;
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
   a {
     font-weight: 500;
-    color: #4F46E5; /* indigo-600 */
+    color: #4F46E5;
     text-decoration: none;
     transition: color 0.2s ease;
   }
 
   a:hover {
-    color: #3730A3; /* indigo-800 */
+    color: #3730A3;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -45,29 +57,12 @@
     margin-bottom: 0.5rem;
   }
 
-  h1 {
-    font-size: 2.25rem; /* text-3xl */
-  }
-
-  h2 {
-    font-size: 1.5rem; /* text-xl */
-  }
-
-  h3 {
-    font-size: 1.25rem; /* text-lg */
-  }
-
-  h4 {
-    font-size: 1.125rem;
-  }
-
-  h5 {
-    font-size: 1rem;
-  }
-
-  h6 {
-    font-size: 0.875rem;
-  }
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  h4 { font-size: 1.125rem; }
+  h5 { font-size: 1rem; }
+  h6 { font-size: 0.875rem; }
 
   p {
     margin-bottom: 1rem;
@@ -75,21 +70,20 @@
   }
 
   ::selection {
-    background-color: #c7d2fe; /* indigo-200 */
-    color: #1e1b4b; /* indigo-900 */
+    background-color: #c7d2fe;
+    color: #1e1b4b;
   }
 
   ::placeholder {
-    color: #9ca3af; /* gray-400 */
+    color: #9ca3af;
     opacity: 1;
   }
 
   :focus-visible {
-    outline: 2px solid #6366f1; /* indigo-500 */
+    outline: 2px solid #6366f1;
     outline-offset: 2px;
   }
 
-  /* 스크롤바 */
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -100,32 +94,30 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1; /* slate-300 */
+    background-color: #cbd5e1;
     border-radius: 10px;
     transition: background-color 0.3s;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: #94a3b8; /* slate-400 */
+    background-color: #94a3b8;
   }
 
-  /* 다크 모드 (class 기반) */
-  .dark html,
-  .dark body {
-    background-color: #18181b; /* neutral-900 */
-    color: #f4f4f5; /* zinc-100 */
+  .dark html, .dark body, .dark #root {
+    background-color: #18181b;
+    color: #f4f4f5;
   }
 
   .dark a {
-    color: #818cf8; /* indigo-400 */
+    color: #818cf8;
   }
 
   .dark a:hover {
-    color: #a5b4fc; /* indigo-300 */
+    color: #a5b4fc;
   }
 
   .dark ::placeholder {
-    color: #a1a1aa; /* zinc-400 */
+    color: #a1a1aa;
   }
 
   .dark ::selection {
@@ -134,10 +126,101 @@
   }
 
   .dark ::-webkit-scrollbar-thumb {
-    background-color: #3f3f46; /* zinc-700 */
+    background-color: #3f3f46;
   }
 
   .dark ::-webkit-scrollbar-thumb:hover {
-    background-color: #52525b; /* zinc-600 */
+    background-color: #52525b;
+  }
+
+  /* 📌 Popover & Datepicker float 스타일 */
+  .popover-container,
+  .datepicker-container {
+    position: relative;
+    overflow: visible !important;
+    z-index: 50;
+  }
+
+  .popover-content,
+  .datepicker-content,
+  .react-datepicker,
+  .react-datepicker-popper,
+  .custom-datepicker {
+    position: absolute !important;
+    z-index: 9999 !important;
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 1rem;
+  }
+
+  .dark .popover-content,
+  .dark .datepicker-content,
+  .dark .react-datepicker,
+  .dark .custom-datepicker {
+    background-color: #27272a;
+    color: #f4f4f5;
+  }
+
+  /* ✅ 고급스러운 인터랙션 */
+  .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  input[type="text"],
+  input[type="file"],
+  select,
+  textarea {
+    transition: all 0.2s;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem 0.75rem;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+  }
+
+  button {
+    transition: all 0.2s ease-in-out;
+    border-radius: 0.375rem;
+  }
+
+  button:hover {
+    transform: scale(1.02);
+  }
+
+  /* ✅ 추가 요소: 카드 그라데이션, 강조 텍스트 */
+  .gradient-card {
+    background: linear-gradient(to bottom right, #f3f4f6, #e5e7eb);
+    border: 1px solid #d1d5db;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  .highlight-text {
+    font-weight: 600;
+    color: #4f46e5;
+  }
+
+  .dark .highlight-text {
+    color: #a5b4fc;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 }

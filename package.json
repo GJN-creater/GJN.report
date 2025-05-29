@@ -10,14 +10,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-popover": "^1.1.14",
     "@shadcn/ui": "^0.0.4",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
     "clsx": "^2.1.1",
+    "cors": "^2.8.5",
     "date-fns": "^4.1.0",
+    "express": "^5.1.0",
     "framer-motion": "^12.14.0",
+    "iconv-lite": "^0.6.3",
     "lucide-react": "^0.511.0",
+    "multer": "^2.0.0",
     "react": "^19.1.0",
     "react-datepicker": "^8.4.0",
     "react-dom": "^19.1.0",
@@ -25,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@tailwindcss/postcss": "^4.1.7",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
@@ -36,5 +42,18 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.7",
     "vite": "^6.3.5"
-  }
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GJN-creater/GJN-creater.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GJN-creater/GJN-creater/issues"
+  },
+  "homepage": "https://github.com/GJN-creater/GJN-creater#readme"
 }

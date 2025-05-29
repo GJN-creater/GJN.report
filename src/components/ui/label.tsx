@@ -1,18 +1,27 @@
-import * as React from "react"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
+  required?: boolean;
 }
 
 export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
-  ({ className = "", children, ...props }, ref) => {
+  ({ className = "", children, required = false, ...props }, ref) => {
     return (
       <label
         ref={ref}
-        className={`block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300 ${className}`}
+        className={cn(
+          "block text-sm font-semibold tracking-wide",
+          "text-gray-700 dark:text-gray-300",
+          "mb-1 select-none",
+          "transition-colors duration-200 ease-in-out",
+          className
+        )}
         {...props}
       >
         {children}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
     );
   }
