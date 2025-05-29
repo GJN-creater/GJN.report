@@ -49,16 +49,18 @@ export default function DailyReportPage() {
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
 
+  // 🔁 공통 데이터 fetch 함수
+  const loadReports = async () => {
+    try {
+      const data = await fetchReports();
+      setReports(data);
+    } catch (error) {
+      console.error("🔥 Firestore 불러오기 실패:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchReports();
-        setReports(data);
-      } catch (error) {
-        console.error("🔥 Firestore 불러오기 실패:", error);
-      }
-    };
-    fetchData();
+    loadReports();
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,9 +75,12 @@ export default function DailyReportPage() {
     if (attachedFiles.length > 0) uploadedUrls = await uploadFilesToFirebase(attachedFiles);
 
     if (editId !== null) {
-      setReports(prev => prev.map(r => r.id === editId
-        ? { ...r, dept: selectedDept, content, note, files: uploadedUrls }
-        : r));
+      setReports(prev =>
+        prev.map(r => r.id === editId
+          ? { ...r, dept: selectedDept, content, note, files: uploadedUrls }
+          : r
+        )
+      );
       setEditId(null);
     } else {
       const newReport: Report = {
@@ -124,7 +129,6 @@ export default function DailyReportPage() {
     );
   };
 
-  // ✅ 수정 버튼 기능 정의
   const handleEdit = (report: Report) => {
     setSelectedDept(report.dept);
     setContent(report.content);
@@ -134,10 +138,10 @@ export default function DailyReportPage() {
 
   const handleDelete = async (id: number | string) => {
     if (confirm("정말 삭제하시겠습니까?")) {
-      setReports(prev => prev.filter(r => r.id !== id));
       if (typeof id === "string") {
         try {
           await deleteReport(id);
+          await loadReports(); // ✅ 삭제 후 즉시 반영
         } catch (err) {
           alert("삭제에 실패했습니다.");
           console.error("Firestore 삭제 실패:", err);
@@ -164,12 +168,13 @@ export default function DailyReportPage() {
   return (
     <div className="flex justify-center overflow-visible relative z-0">
       <div className="w-full max-w-[1600px] grid grid-cols-[440px_1fr] gap-24 mt-12 items-start px-12">
-        {/* 좌측 작성 폼 */}
+        {/* 좌측 작성폼 */}
         <div className="content-wrapper space-y-6 sticky top-12 h-fit">
           <Card className="p-6 shadow-xl bg-white rounded-xl border border-gray-200">
             <h2 className="text-lg font-bold text-center text-indigo-700 dark:text-indigo-300">
               📌 부서별 업무일지 작성
             </h2>
+
             <div className="flex flex-wrap justify-start gap-2 mt-4 pl-2">
               {departments.map(dept => (
                 <Button
@@ -218,7 +223,7 @@ export default function DailyReportPage() {
           </Card>
         </div>
 
-        {/* 우측 목록 영역 */}
+        {/* 우측 목록 */}
         <div className="flex-1 min-w-0 flex flex-col space-y-6 pr-6 mt-4">
           <div className="flex flex-wrap gap-2 items-center px-2">
             <DatePicker
