@@ -25,16 +25,16 @@ export function cn(...inputs: Array<string | undefined | null | false | 0 | Reco
 
 // -------------------- Firebase 연동 --------------------
 
-import { db } from "@lib/firebase";
+import { db } from "./firebase";
 import {
   collection,
   addDoc,
   getDocs,
   updateDoc,
-  deleteDoc,     // ✅ 삭제 기능 추가
   orderBy,
   query,
   doc,
+  deleteDoc,
   Timestamp,
 } from "firebase/firestore";
 
@@ -90,9 +90,26 @@ export const updateReportReaders = async (id: string, readers: string[]) => {
 };
 
 /**
- * Firestore에서 특정 문서 삭제
+ * Firestore 문서 삭제 (id 기준)
  */
 export const deleteReport = async (id: string) => {
   const ref = doc(db, "reports", id);
   await deleteDoc(ref);
+};
+
+/**
+ * Firestore 문서 수정
+ */
+export const updateReport = async (
+  id: string,
+  updated: Partial<{
+    department: string;
+    content: string;
+    note: string;
+    files: string[];
+    readers: string[];
+  }>
+) => {
+  const ref = doc(db, "reports", id);
+  await updateDoc(ref, updated);
 };

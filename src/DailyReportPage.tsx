@@ -4,6 +4,7 @@ import {
   fetchReports,
   updateReportReaders,
   deleteReport,
+  updateReport,
 } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { format, isWithinInterval, parse } from "date-fns";
@@ -81,6 +82,15 @@ export default function DailyReportPage() {
           : r
         )
       );
+          if (typeof editId === "string") {
+      // 🔹 Firestore 업데이트 반영
+      await updateReport(editId, {
+        department: selectedDept,
+        content,
+        note,
+        files: uploadedUrls,
+      });
+    }
       setEditId(null);
     } else {
       const newReport: Report = {
