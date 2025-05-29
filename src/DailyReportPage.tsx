@@ -44,13 +44,12 @@ export default function DailyReportPage() {
   const [content, setContent] = useState<string>("");
   const [note, setNote] = useState<string>("");
   const [reports, setReports] = useState<Report[]>([]);
-  const [editId, setEditId] = useState<number | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
   const [filterDates, setFilterDates] = useState<[Date | null, Date | null]>([null, null]);
   const [filterDept, setFilterDept] = useState<string | null>(null);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
-  const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
+  const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
 
-  // 🔁 공통 데이터 fetch 함수
   const loadReports = async () => {
     try {
       const data = await fetchReports();
@@ -71,39 +70,18 @@ export default function DailyReportPage() {
   const handleSubmit = async () => {
     if (!content.trim()) return;
     const now = format(new Date(), "yyyy-MM-dd");
-
     let uploadedUrls: string[] = [];
     if (attachedFiles.length > 0) uploadedUrls = await uploadFilesToFirebase(attachedFiles);
 
     if (editId !== null) {
-      setReports(prev =>
-        prev.map(r => r.id === editId
-          ? { ...r, dept: selectedDept, content, note, files: uploadedUrls }
-          : r
-        )
-      );
-          if (typeof editId === "string") {
-      // 🔹 Firestore 업데이트 반영
       await updateReport(editId, {
         department: selectedDept,
         content,
         note,
         files: uploadedUrls,
       });
-    }
       setEditId(null);
     } else {
-      const newReport: Report = {
-        id: Date.now(),
-        dept: selectedDept,
-        content,
-        note,
-        readers: [],
-        createdAt: now,
-        files: uploadedUrls,
-      };
-      setReports([newReport, ...reports]);
-
       await saveReport({
         writer: "관리자",
         department: selectedDept,
@@ -115,52 +93,41 @@ export default function DailyReportPage() {
       });
     }
 
+    await loadReports();
     setContent("");
     setNote("");
     setAttachedFiles([]);
   };
 
-  const handleReadToggle = (id: number | string, name: string) => {
-    setReports(prev =>
-      prev.map(r => {
-        if (r.id === id) {
-          const updatedReaders = r.readers.includes(name)
-            ? r.readers.filter(n => n !== name)
-            : [...r.readers, name];
-
-          if (typeof r.id === "string") {
-            updateReportReaders(r.id, updatedReaders);
-          }
-
-          return { ...r, readers: updatedReaders };
-        }
-        return r;
-      })
-    );
+  const handleReadToggle = async (id: string, name: string) => {
+    const updated = reports.map((r) => {
+      if (r.id === id) {
+        const updatedReaders = r.readers.includes(name)
+          ? r.readers.filter((n) => n !== name)
+          : [...r.readers, name];
+        updateReportReaders(id, updatedReaders);
+        return { ...r, readers: updatedReaders };
+      }
+      return r;
+    });
+    setReports(updated);
   };
 
   const handleEdit = (report: Report) => {
     setSelectedDept(report.dept);
     setContent(report.content);
     setNote(report.note);
-    setEditId(typeof report.id === "number" ? report.id : null);
+    setEditId(report.id.toString());
   };
 
-  const handleDelete = async (id: number | string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("정말 삭제하시겠습니까?")) {
-      if (typeof id === "string") {
-        try {
-          await deleteReport(id);
-          await loadReports(); // ✅ 삭제 후 즉시 반영
-        } catch (err) {
-          alert("삭제에 실패했습니다.");
-          console.error("Firestore 삭제 실패:", err);
-        }
-      }
+      await deleteReport(id);
+      await loadReports();
     }
   };
 
-  const filtered = reports.filter(r => {
+  const filtered = reports.filter((r) => {
     const date = parse(r.createdAt, "yyyy-MM-dd", new Date());
     const matchDate = filterDates[0] && filterDates[1]
       ? isWithinInterval(date, { start: filterDates[0], end: filterDates[1] })
@@ -178,7 +145,6 @@ export default function DailyReportPage() {
   return (
     <div className="flex justify-center overflow-visible relative z-0">
       <div className="w-full max-w-[1600px] grid grid-cols-[440px_1fr] gap-24 mt-12 items-start px-12">
-        {/* 좌측 작성폼 */}
         <div className="content-wrapper space-y-6 sticky top-12 h-fit">
           <Card className="p-6 shadow-xl bg-white rounded-xl border border-gray-200">
             <h2 className="text-lg font-bold text-center text-indigo-700 dark:text-indigo-300">
@@ -186,7 +152,7 @@ export default function DailyReportPage() {
             </h2>
 
             <div className="flex flex-wrap justify-start gap-2 mt-4 pl-2">
-              {departments.map(dept => (
+              {departments.map((dept) => (
                 <Button
                   key={dept}
                   onClick={() => setSelectedDept(dept)}
@@ -205,13 +171,13 @@ export default function DailyReportPage() {
             <div className="space-y-4 mt-4">
               <Textarea
                 value={content}
-                onChange={e => setContent(e.target.value)}
+                onChange={(e) => setContent(e.target.value)}
                 placeholder="내용 작성"
                 rows={6}
               />
               <Textarea
                 value={note}
-                onChange={e => setNote(e.target.value)}
+                onChange={(e) => setNote(e.target.value)}
                 placeholder="비고"
                 rows={4}
               />
@@ -233,7 +199,6 @@ export default function DailyReportPage() {
           </Card>
         </div>
 
-        {/* 우측 목록 */}
         <div className="flex-1 min-w-0 flex flex-col space-y-6 pr-6 mt-4">
           <div className="flex flex-wrap gap-2 items-center px-2">
             <DatePicker
@@ -249,11 +214,11 @@ export default function DailyReportPage() {
             />
             <select
               value={filterDept || ""}
-              onChange={e => setFilterDept(e.target.value || null)}
+              onChange={(e) => setFilterDept(e.target.value || null)}
               className="border px-3 py-2 rounded-md text-sm"
             >
               <option value="">전체 부서</option>
-              {departments.map(dept => (
+              {departments.map((dept) => (
                 <option key={dept} value={dept}>{dept}</option>
               ))}
             </select>
@@ -265,10 +230,10 @@ export default function DailyReportPage() {
             )}
           </div>
 
-          {sortedDates.map(date => (
+          {sortedDates.map((date) => (
             <div key={date} className="space-y-4">
               <h3 className="text-base font-bold text-gray-700 dark:text-gray-200 border-b pb-1">{date}</h3>
-              {grouped[date].map(report => (
+              {grouped[date].map((report) => (
                 <motion.div
                   key={report.id}
                   initial={{ opacity: 0, y: 10 }}
@@ -276,10 +241,12 @@ export default function DailyReportPage() {
                   className="bg-white dark:bg-neutral-800 rounded-xl border shadow p-4 space-y-3 transition-shadow hover:shadow-lg"
                 >
                   <div className="flex justify-between items-center">
-                    <strong className="!text-black !dark:text-black !text-lg !tracking-tight">[{report.dept}]</strong>
+                    <strong className="!text-black !dark:text-black !text-lg !tracking-tight">
+                      [{report.dept}]
+                    </strong>
                     <div className="space-x-2">
                       <Button size="sm" className="bg-yellow-300 text-black px-2 py-1" onClick={() => handleEdit(report)}>수정</Button>
-                      <Button size="sm" className="bg-red-500 text-white px-2 py-1" onClick={() => handleDelete(report.id)}>삭제</Button>
+                      <Button size="sm" className="bg-red-500 text-white px-2 py-1" onClick={() => handleDelete(report.id.toString())}>삭제</Button>
                     </div>
                   </div>
 
@@ -309,7 +276,7 @@ export default function DailyReportPage() {
                   )}
 
                   <div className="mt-3 relative z-0 overflow-visible">
-                    <Popover open={openPopoverId === report.id} onOpenChange={(open) => setOpenPopoverId(open ? Number(report.id) : null)}>
+                    <Popover open={openPopoverId === report.id} onOpenChange={(open) => setOpenPopoverId(open ? report.id.toString() : null)}>
                       <PopoverTrigger asChild>
                         <Button variant="outline" size="sm">열람자 체크</Button>
                       </PopoverTrigger>
@@ -320,12 +287,12 @@ export default function DailyReportPage() {
                         className="z-[9999] w-[320px] max-h-[300px] overflow-y-auto rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-xl p-4"
                       >
                         <div className="grid grid-cols-2 gap-2">
-                          {readers.map(reader => {
+                          {readers.map((reader) => {
                             const isChecked = report.readers.includes(reader);
                             return (
                               <div
                                 key={reader}
-                                onClick={() => handleReadToggle(report.id, reader)}
+                                onClick={() => handleReadToggle(report.id.toString(), reader)}
                                 className={cn(
                                   "flex items-center gap-2 px-3 py-2 rounded-md text-sm cursor-pointer border transition",
                                   isChecked
