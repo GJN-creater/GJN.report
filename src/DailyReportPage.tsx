@@ -1,3 +1,4 @@
+import { uploadFilesToFirebase } from "@/lib/uploadFilesToFirebase";
 import { useEffect, useState } from "react";
 import { format, isWithinInterval, parse } from "date-fns";
 import { Card } from "@/components/ui/card";
@@ -31,19 +32,6 @@ const readers = [
   "왕희도", "오채연", "소종호", "윤지은", "김재환", "이윤희"
 ];
 
-const uploadFiles = async (files: File[]): Promise<string[]> => {
-  const formData = new FormData();
-  files.forEach(file => formData.append("files", file));
-  const filenames = files.map(file => file.name);
-  formData.append("filenames", JSON.stringify(filenames));
-  const res = await fetch("http://localhost:4000/upload", {
-    method: "POST",
-    body: formData,
-  });
-  const data = await res.json();
-  return data.files.map((f: { url: string }) => f.url);
-};
-
 export default function DailyReportPage() {
   const [selectedDept, setSelectedDept] = useState<string>(departments[0]);
   const [content, setContent] = useState<string>("");
@@ -72,7 +60,7 @@ export default function DailyReportPage() {
     if (!content.trim()) return;
     const now = format(new Date(), "yyyy-MM-dd");
     let uploadedUrls: string[] = [];
-    if (attachedFiles.length > 0) uploadedUrls = await uploadFiles(attachedFiles);
+    if (attachedFiles.length > 0) uploadedUrls = await uploadFilesToFirebase(attachedFiles);
     if (editId !== null) {
       setReports(prev => prev.map(r => r.id === editId
         ? { ...r, dept: selectedDept, content, note, files: uploadedUrls }
@@ -233,7 +221,7 @@ export default function DailyReportPage() {
                   className="bg-white dark:bg-neutral-800 rounded-xl border shadow p-4 space-y-3 transition-shadow hover:shadow-lg"
                 >
                   <div className="flex justify-between items-center">
-                    <span className="text-black dark:text-white font-bold text-lg">[{report.dept}]</span>
+                    <strong className="!text-black !dark:text-black !text-lg !tracking-tight">[{report.dept}]</strong>
                     <div className="space-x-2">
                       <Button size="sm" className="bg-yellow-300 text-black px-2 py-1" onClick={() => handleEdit(report)}>수정</Button>
                       <Button size="sm" className="bg-red-500 text-white px-2 py-1" onClick={() => handleDelete(report.id)}>삭제</Button>

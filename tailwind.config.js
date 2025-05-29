@@ -8,6 +8,11 @@ export default {
   content: [
     './index.html',
     './src/**/*.{js,ts,jsx,tsx}',
+    '!text-black',
+    '!dark:text-black',
+    '!font-extrabold',
+    '!text-lg',
+    '!tracking-tight'
   ],
   theme: {
     container: {
