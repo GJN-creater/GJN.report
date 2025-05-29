@@ -11,7 +11,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
+  // ✅ GitHub Pages 배포용 base 경로 설정
+  base: '/GJN.report/',
+
   plugins: [react()],
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -19,12 +23,14 @@ export default defineConfig({
       '@lib': path.resolve(__dirname, 'src/lib'),
     },
   },
+
   server: {
     host: '0.0.0.0',
     port: 5173,
     open: true,
     strictPort: true,
   },
+
   build: {
     outDir: 'dist',
     sourcemap: true,
@@ -33,6 +39,7 @@ export default defineConfig({
     assetsInlineLimit: 4096,
     cssCodeSplit: true,
   },
+
   optimizeDeps: {
     include: ['react', 'react-dom', 'framer-motion', 'date-fns'],
   },
