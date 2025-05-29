@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@radix-ui/react-popover": "^1.1.14",
@@ -41,19 +43,20 @@
     "globals": "^16.0.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.7",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "gh-pages": "^6.1.1"
   },
   "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
   "main": "eslint.config.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GJN-creater/GJN-creater.git"
+    "url": "git+https://github.com/GJN-creater/GJN.report.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/GJN-creater/GJN-creater/issues"
+    "url": "https://github.com/GJN-creater/GJN.report/issues"
   },
-  "homepage": "https://github.com/GJN-creater/GJN-creater#readme"
+  "homepage": "https://GJN-creater.github.io/GJN.report/"
 }
