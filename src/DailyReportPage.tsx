@@ -54,6 +54,7 @@ export default function DailyReportPage() {
   const [disabledDates, setDisabledDates] = useState<string[]>([]);
   const [adminPassword, setAdminPassword] = useState<string>("");
   const [disableDate, setDisableDate] = useState<string>("");
+  const [reportDate, setReportDate] = useState<Date | null>(new Date());
 
   const loadReports = async () => {
     try {
@@ -80,7 +81,8 @@ export default function DailyReportPage() {
 
   const handleSubmit = async () => {
     if (!content.trim()) return;
-    const now = format(new Date(), "yyyy-MM-dd");
+    if (!reportDate) return alert("날짜를 선택해주세요");
+    const formattedDate = format(reportDate, "yyyy-MM-dd");
     let uploadedUrls: string[] = [];
     if (attachedFiles.length > 0) uploadedUrls = await uploadFilesToFirebase(attachedFiles);
 
@@ -98,7 +100,7 @@ export default function DailyReportPage() {
         department: selectedDept,
         content,
         note,
-        createdAt: now,
+        createdAt: formattedDate,
         files: uploadedUrls,
         readers: [],
       });
@@ -211,9 +213,28 @@ export default function DailyReportPage() {
             <div className="space-y-4 mt-4">
               <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="내용 작성" rows={6} />
               <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="비고" rows={4} />
+
               <div>
-                <label className="block font-semibold text-sm">파일 첨부</label>
-                <input type="file" multiple onChange={handleFileChange} className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                <label className="block font-semibold text-sm">작성 날짜</label>
+                <DatePicker
+                  selected={reportDate}
+                  onChange={(date) => setReportDate(date)}
+                  dateFormat="yyyy-MM-dd"
+                  className="border px-3 py-2 rounded-md text-sm w-full"
+                  placeholderText="작성 날짜 선택"
+                  popperPlacement="bottom-start"
+                  portalId="root"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-sm">파일 참부</label>
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleFileChange}
+                  className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                />
               </div>
               <div className="text-right">
                 <Button onClick={handleSubmit} className="transition-transform hover:scale-105">
@@ -223,7 +244,7 @@ export default function DailyReportPage() {
             </div>
 
             <div className="mt-6 border-t pt-4">
-              <h4 className="text-sm font-semibold mb-2">관리자 열람 제한 설정</h4>
+              <h4 className="text-sm font-semibold mb-2">관리자 엘러르 제한 설정</h4>
               <input
                 type="date"
                 value={disableDate}
