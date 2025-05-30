@@ -244,7 +244,7 @@ export default function DailyReportPage() {
             </div>
 
             <div className="mt-6 border-t pt-4">
-              <h4 className="text-sm font-semibold mb-2">관리자 엘러르 제한 설정</h4>
+              <h4 className="text-sm font-semibold mb-2">관리자 열람 제한 설정</h4>
               <input
                 type="date"
                 value={disableDate}
