@@ -9,14 +9,12 @@ export function cn(...inputs: Array<string | undefined | null | false | 0 | Reco
       if (typeof input === "string" || typeof input === "number") {
         return input;
       }
-
       if (typeof input === "object" && input !== null) {
         return Object.entries(input)
           .filter(([_, value]) => Boolean(value))
           .map(([key]) => key)
           .join(" ");
       }
-
       return "";
     })
     .filter(Boolean)
@@ -36,6 +34,9 @@ import {
   doc,
   deleteDoc,
   Timestamp,
+  where,
+  getDoc,
+  setDoc
 } from "firebase/firestore";
 
 /**
@@ -112,4 +113,34 @@ export const updateReport = async (
 ) => {
   const ref = doc(db, "reports", id);
   await updateDoc(ref, updated);
+};
+
+/**
+ * 열람 비활성화 날짜 저장 또는 삭제 토글 (같은 날짜 두 번 누르면 삭제됨)
+ */
+export const disableReadDate = async (dateStr: string) => {
+  const ref = doc(db, "disabledDates", dateStr);
+  const snap = await getDoc(ref);
+
+  if (snap.exists()) {
+    await deleteDoc(ref); // 🔓 허용: 문서 삭제
+  } else {
+    await setDoc(ref, { date: dateStr }); // 🔒 제한: 문서 생성
+  }
+};
+
+/**
+ * 열람 비활성화된 날짜 목록 불러오기
+ */
+export const fetchDisabledDates = async (): Promise<string[]> => {
+  const snapshot = await getDocs(collection(db, "disabledDates"));
+  return snapshot.docs.map((doc) => doc.id);
+};
+
+/**
+ * 강제 허용 처리 (지정 날짜를 무조건 허용 상태로 만들기)
+ */
+export const enableReadDate = async (date: string) => {
+  const ref = doc(db, "disabledDates", date);
+  await deleteDoc(ref);
 };
