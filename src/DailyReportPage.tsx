@@ -211,8 +211,8 @@ export default function DailyReportPage() {
             </div>
 
             <div className="space-y-4 mt-4">
-              <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="내용 작성" rows={6} />
-              <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="비고" rows={4} />
+              <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="내용 작성" rows={20} />
+              <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="비고" rows={8} />
 
               <div>
                 <label className="block font-semibold text-sm">작성 날짜</label>
